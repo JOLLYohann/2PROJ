@@ -18,15 +18,16 @@ class Display:
         self.__load_buttons()
 
     def __load_pictures(self):
-        self.__home_background = pygame.image.load(os.path.join(self.__path, "assets", "pictures", "home_background.jpg"))
-        self.__level_background = pygame.image.load(os.path.join(self.__path, "assets", "pictures", "TEMP_level_background.jpg"))
-        self.__setting_background = pygame.image.load(os.path.join(self.__path, "assets", "pictures", "TEMP_setting_background.jpg"))
+        self.__home_background = pygame.image.load(os.path.join(self.__path, "assets", "pictures", "home_background.png"))
+        self.__level_background = pygame.image.load(os.path.join(self.__path, "assets", "pictures", "TEMP_level_background.png"))
+        self.__setting_background = pygame.image.load(os.path.join(self.__path, "assets", "pictures", "TEMP_setting_background.png"))
+        self.__game_background = pygame.image.load(os.path.join(self.__path, "assets", "pictures", "TEMP_game_background.png"))
 
-        self.__back_button = pygame.image.load(os.path.join(self.__path, "assets", "pictures", "back_button.jpg"))
+        self.__back_button = pygame.image.load(os.path.join(self.__path, "assets", "pictures", "back_button.png"))
         self.__back_button_rect = self.__back_button.get_rect(topleft=(25, 25))
-        self.__play_button = pygame.image.load(os.path.join(self.__path, "assets", "pictures", "play_button.jpg"))
+        self.__play_button = pygame.image.load(os.path.join(self.__path, "assets", "pictures", "play_button.png"))
         self.__play_button_rect = self.__play_button.get_rect(topleft=(900, 200))
-        self.__setting_button = pygame.image.load(os.path.join(self.__path, "assets", "pictures", "setting_button.jpg"))
+        self.__setting_button = pygame.image.load(os.path.join(self.__path, "assets", "pictures", "setting_button.png"))
         self.__setting_button_rect = self.__setting_button.get_rect(topleft=(900, 300))
 
     def __load_buttons(self):
@@ -57,7 +58,7 @@ class Display:
         self.__surface.blit(self.__back_button, self.__back_button_rect)
 
     def draw_game(self):
-        self.__surface.blit(self.__home_background, (0, 0))
+        self.__surface.blit(self.__game_background, (0, 0))
         self.__surface.blit(self.__back_button, self.__back_button_rect)
 
     def render(self):
