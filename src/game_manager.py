@@ -1,5 +1,7 @@
 import pygame
 
+from src.game_loop import GameLoop
+
 class GameManager:
     def __init__(self, audio, display):
         self.__audio = audio
@@ -46,7 +48,11 @@ class GameManager:
             elif self.__current_page == "level":
                 self.__display.draw_level()
             elif self.__current_page == "game":
-                self.__display.draw_game()
+                game = GameLoop(self.__display)
+                result = game.game_loop()
+                self.__is_running = not result[0]
+
+                self.__current_page = "level"
 
             self.__display.render()
             self.__clock.tick(30)  # 30 FPS
