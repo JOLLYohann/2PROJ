@@ -1,6 +1,8 @@
 import pygame
 
 from src.game_loop import GameLoop
+from src.level import load_level
+from src.settings import FPS
 
 class GameManager:
     def __init__(self, audio, display):
@@ -14,7 +16,7 @@ class GameManager:
         
         self.__navigation()
 
-    def __click_coord(self):
+    def __click_coord(self): # Plus tard -> faire un class ScreenManager dans screen_manager.py, à partager avec game_loop.py
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.__is_running = False
@@ -48,11 +50,12 @@ class GameManager:
             elif self.__current_page == "level":
                 self.__display.draw_level()
             elif self.__current_page == "game":
-                game = GameLoop(self.__display)
+                level = load_level("level-01") # à remplacer par une séléction de niveau plus tard
+                game = GameLoop(self.__display, level, "level-01")
                 result = game.game_loop()
                 self.__is_running = not result[0]
 
                 self.__current_page = "level"
 
             self.__display.render()
-            self.__clock.tick(30)  # 30 FPS
+            self.__clock.tick(FPS)
