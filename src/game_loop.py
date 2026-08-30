@@ -5,13 +5,14 @@ from src.cup import Cup
 from src.wall import Wall
 from src.portal import Portal
 from src.level import load_level
+from src.save import set_save
 from src.settings import SPAWN_INTERVAL_FRAMES, FPS, WALL_THICKNESS
 
 class GameLoop:
-    def __init__(self, display, level, level_id):
+    def __init__(self, display, level_id):
         self.__display = display
-        self.__level = level
         self.__level_id = level_id
+        self.__level = load_level(level_id)
 
         self.__game_closed = False
 
@@ -84,7 +85,11 @@ class GameLoop:
             self.__click_coord()
             self.__handle_drawing()
             self.__spawn_tick()
-            self.update_physics()
+            self.__update_physics()
+
+            if self.__level.is_complete():
+                set_save(self.__level_id)
+                self.__game_finished = True
 
             self.__display.draw_game(self.__level)
             self.__display.render()
@@ -92,8 +97,7 @@ class GameLoop:
 
         return [self.__game_closed]
 
-    def update_physics(self):
-        # list() car les grains peuvent être retirés de get_grains() pendant l'itération
+    def __update_physics(self):
         for grain in list(self.__level.get_grains()):
             self.__update_grain(grain)
 
@@ -118,21 +122,13 @@ class GameLoop:
 
             if cell is None:
                 candidates.append((target_x, target_y))
-                continue
-
-            if isinstance(cell, Cup):
+            elif isinstance(cell, Cup):
                 if cell.catch_grain(grain.get_color()):
                     self.__level.remove_grain(grain)
                     return
-                continue
-
-            if isinstance(cell, Portal):
+            elif isinstance(cell, Portal):
                 grain.set_color(cell.get_output_color())
                 candidates.append((target_x, target_y))
-                continue
-
-            # Tout le reste (Wall, Sugar posé...) bloque le passage
-            continue
 
         if candidates:
             target_x, target_y = random.choice(candidates)

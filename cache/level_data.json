@@ -1,0 +1,41 @@
+{
+  "level-01": {
+    "spawn_point": [800, 50],
+    "grain_color": "white",
+    "total_grains": 1000,
+    "obstacles": [
+      {"shape": "rect", "x": 0, "y": 800, "width": 1600, "height": 100}
+    ],
+    "cups": [
+      {"x": 600, "y": 740, "size": 60, "color": "white", "capacity": 100}
+    ]
+  },
+  "level-02": {
+    "spawn_point": [800, 50],
+    "total_grains": 1000,
+    "grain_color": "white",
+    "obstacles": [
+      {"shape": "rect", "x": 0, "y": 800, "width": 1600, "height": 100}
+    ],
+    "cups": [
+      {"x": 600, "y": 740, "size": 60, "color": "white", "capacity": 100},
+      {"x": 1000, "y": 740, "size": 60, "color": "white", "capacity": 100}
+    ]
+  },
+  "level-test": {
+    "spawn_point": [800, 50],
+    "grain_color": "white",
+    "total_grains": 10000,
+    "obstacles": [
+      {"shape": "rect", "x": 0, "y": 880, "width": 700, "height": 20},
+      {"shape": "rect", "x": 900, "y": 880, "width": 700, "height": 20}
+    ],
+    "portals": [
+      {"x": 785, "y": 400, "size": 30, "output_color": "red"}
+    ],
+    "cups": [
+      {"x": 710, "y": 800, "size": 60, "color": "white", "capacity": 15},
+      {"x": 830, "y": 800, "size": 60, "color": "red", "capacity": 15}
+    ]
+  }
+}

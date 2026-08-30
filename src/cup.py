@@ -35,7 +35,6 @@ class Cup:
         return self.__filled
 
     def mouth_cells(self):
-        """Cases du bord supérieur (l'ouverture) où les grains sont absorbés."""
         for dx in range(self.__size):
             yield (self.__x + dx, self.__y)
 
@@ -46,8 +45,6 @@ class Cup:
         return all(self.__filled[color] >= amount for color, amount in self.__requirements.items())
 
     def catch_grain(self, color):
-        """Tente d'absorber un grain de cette couleur.
-        Renvoie True si accepté (compté), False si refusé (couleur non attendue ou déjà complète)."""
         if not self.accepts_color(color):
             return False
         self.__filled[color] += 1

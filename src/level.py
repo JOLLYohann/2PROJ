@@ -8,6 +8,17 @@ from src.settings import LOGICAL_SIZE
 from src.sugar import Sugar
 
 
+def find_level(level_id = None):
+    project_root = os.path.dirname(os.path.dirname(__file__))
+    json_path = os.path.join(project_root, "cache", "level_data.json")
+
+    with open(json_path, encoding="utf-8") as file:
+        all_levels = json.load(file)
+
+    if level_id:
+        return all_levels[level_id]
+    return all_levels
+
 def load_cup(cup_data, level):
     cup = cup_from_json(cup_data)
     level.add_cup(cup)
@@ -46,13 +57,7 @@ def load_portal(portal_data, level):
 
 
 def load_level(level_id):
-    project_root = os.path.dirname(os.path.dirname(__file__))
-    json_path = os.path.join(project_root, "cache", "levelData.json")
-
-    with open(json_path, encoding="utf-8") as file:
-        all_levels = json.load(file)
-
-    data = all_levels[level_id]
+    data = find_level(level_id)
 
     spawn_point = tuple(data["spawn_point"])  # [x, y] en JSON -> (x, y) en Python
     grain_color = data.get("grain_color", "white")
@@ -148,14 +153,11 @@ class Level:
             self.__grid[y][x] = self.__portal_cells.get((x, y))
 
     def move_grain(self, grain, new_x, new_y):
-        """Déplace un grain : libère son ancienne case, occupe la nouvelle.
-        Immédiatement visible pour les autres grains testés dans la même frame."""
         self.remove(grain.get_x(), grain.get_y())
         grain.set_position(new_x, new_y)
         self.place(grain, new_x, new_y)
 
     def remove_grain(self, grain):
-        """Détruit un grain (absorbé par une cup, ou perdu sur un bord latéral)."""
         self.remove(grain.get_x(), grain.get_y())
         self.__grains.remove(grain)
 
@@ -165,8 +167,6 @@ class Level:
         return self.__grains_spawned < self.__total_grains
 
     def spawn_grain(self, color=None):
-        """Crée un nouveau grain au spawn_point si le quota du niveau le permet.
-        Placé dans la grille dès sa création, comme n'importe quel autre grain."""
         if not self.can_spawn_grain():
             return None
         if color is None:

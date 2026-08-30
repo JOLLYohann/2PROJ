@@ -1,7 +1,8 @@
 import pygame
 
 from src.game_loop import GameLoop
-from src.level import load_level
+from src.level import find_level
+from src.save import load_save
 from src.settings import FPS
 
 class GameManager:
@@ -13,7 +14,10 @@ class GameManager:
 
         self.__is_running = True
         self.__current_page = "homepage"
-        
+
+        self.__level_ids = sorted(find_level().keys())
+        self.__selected_level_id = None
+
         self.__navigation()
 
     def __click_coord(self): # Plus tard -> faire un class ScreenManager dans screen_manager.py, à partager avec game_loop.py
@@ -33,11 +37,21 @@ class GameManager:
                 elif self.__current_page == "level":
                     if self.__display.get_button("back").collidepoint(mouse_click):
                         self.__current_page = "homepage"
-                    else :
-                        self.__current_page = "game"
-                elif self.__current_page == "game":
-                    if self.__display.get_button("back").collidepoint(mouse_click):
-                        self.__current_page = "level"
+                    else:
+                        self.__handle_level_click(mouse_click)
+
+    def __handle_level_click(self, mouse_click):
+        player_level = load_save()["player"]["level"]
+        level_buttons = self.__display.get_level_button_rects(self.__level_ids)
+
+        for index, level_id in enumerate(self.__level_ids):
+            if index >= player_level:
+                continue
+
+            if level_buttons[level_id].collidepoint(mouse_click):
+                self.__selected_level_id = level_id
+                self.__current_page = "game"
+                return
 
     def __navigation(self):
         while self.__is_running:
@@ -48,10 +62,10 @@ class GameManager:
             elif self.__current_page == "setting":
                 self.__display.draw_setting()
             elif self.__current_page == "level":
-                self.__display.draw_level()
+                player_level = load_save()["player"]["level"]
+                self.__display.draw_level(self.__level_ids, player_level)
             elif self.__current_page == "game":
-                level = load_level("level-01") # à remplacer par une séléction de niveau plus tard
-                game = GameLoop(self.__display, level, "level-01")
+                game = GameLoop(self.__display, self.__selected_level_id)
                 result = game.game_loop()
                 self.__is_running = not result[0]
 
