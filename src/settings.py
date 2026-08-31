@@ -7,10 +7,10 @@ WALL_COLOR = (0, 0, 0)
 OBSTACLE_COLOR = (101, 67, 33)
 GRAVITY_BUTTON_COLOR = (70, 130, 180)
 RESET_BUTTON_COLOR = (180, 60, 60)
-LEVEL_BUTTON_TEXT_COLOR = (0, 0, 0)
+TEXT_COLOR = (0, 0, 0)
 WALL_THICKNESS = 10
 GRAIN_COLORS = {
     "white": (255, 255, 255),
-    "red": (220, 50, 50),
-    "blue": (50, 100, 220),
+    "red": (255, 0, 0),
+    "blue": (0, 0, 255),
 }

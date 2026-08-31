@@ -34,6 +34,12 @@ class GameManager:
                 elif self.__current_page == "setting":
                     if self.__display.get_button("back").collidepoint(mouse_click):
                         self.__current_page = "homepage"
+                    elif self.__display.get_button("music_left").collidepoint(mouse_click):
+                        self.__audio.set_music(-1)
+                    elif self.__display.get_button("music_right").collidepoint(mouse_click):
+                        self.__audio.set_music(1)
+                    elif self.__display.get_button("music_toggle").collidepoint(mouse_click):
+                        self.__audio.play_music()
                 elif self.__current_page == "level":
                     if self.__display.get_button("back").collidepoint(mouse_click):
                         self.__current_page = "homepage"
@@ -60,7 +66,7 @@ class GameManager:
             if self.__current_page == "homepage":
                 self.__display.draw_home()
             elif self.__current_page == "setting":
-                self.__display.draw_setting()
+                self.__display.draw_setting(self.__audio)
             elif self.__current_page == "level":
                 player_level = load_save()["player"]["level"]
                 self.__display.draw_level(self.__level_ids, player_level)

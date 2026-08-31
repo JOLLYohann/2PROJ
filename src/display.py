@@ -1,11 +1,11 @@
 import pygame
 import os
 
-from src.settings import LOGICAL_SIZE, WALL_COLOR, OBSTACLE_COLOR, GRAIN_COLORS, GRAVITY_BUTTON_COLOR, RESET_BUTTON_COLOR, LEVEL_BUTTON_TEXT_COLOR
+from src.settings import LOGICAL_SIZE, WALL_COLOR, OBSTACLE_COLOR, GRAIN_COLORS, GRAVITY_BUTTON_COLOR, RESET_BUTTON_COLOR, TEXT_COLOR
 
 class Display: # Ne pas oublié le smooth scale 
     def __init__(self):
-        self.__path = os.path.dirname(os.path.dirname(__file__))
+        self.__path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets", "pictures")
 
         pygame.init()
 
@@ -19,34 +19,52 @@ class Display: # Ne pas oublié le smooth scale
         self.__load_buttons()
 
     def __load_pictures(self):
-        self.__home_background = pygame.image.load(os.path.join(self.__path, "assets", "pictures", "home_background.png"))
-        self.__level_background = pygame.image.load(os.path.join(self.__path, "assets", "pictures", "level_background.png"))
-        self.__setting_background = pygame.image.load(os.path.join(self.__path, "assets", "pictures", "TEMP_setting_background.png"))
-        self.__game_background = pygame.image.load(os.path.join(self.__path, "assets", "pictures", "game_background.png"))
+        self.__home_background = pygame.image.load(os.path.join(self.__path, "backgrounds", "home_background.png"))
+        self.__level_background = pygame.image.load(os.path.join(self.__path, "backgrounds", "level_background.png"))
+        self.__setting_background = pygame.image.load(os.path.join(self.__path, "backgrounds", "setting_background.png"))
+        self.__game_background = pygame.image.load(os.path.join(self.__path, "backgrounds", "game_background.png"))
 
-        self.__back_button = pygame.image.load(os.path.join(self.__path, "assets", "pictures", "back_button.png"))
+        self.__back_button = pygame.image.load(os.path.join(self.__path, "buttons", "back_button.png"))
         self.__back_button_rect = self.__back_button.get_rect(topleft=(25, 25))
-        self.__play_button = pygame.image.load(os.path.join(self.__path, "assets", "pictures", "play_button.png"))
+        self.__play_button = pygame.image.load(os.path.join(self.__path, "buttons", "play_button.png"))
         self.__play_button_rect = self.__play_button.get_rect(topleft=(900, 200))
-        self.__setting_button = pygame.image.load(os.path.join(self.__path, "assets", "pictures", "setting_button.png"))
+        self.__setting_button = pygame.image.load(os.path.join(self.__path, "buttons", "setting_button.png"))
         self.__setting_button_rect = self.__setting_button.get_rect(topleft=(900, 300))
+        self.__level_button_image = pygame.image.load(os.path.join(self.__path, "buttons", "available_level_button.png"))
+        self.__lock_level_button_image = pygame.image.load(os.path.join(self.__path, "buttons", "unavailable_level_button.png"))
+        self.__music_on_button = pygame.image.load(os.path.join(self.__path, "buttons", "music_on_button.png"))
+        self.__music_off_button = pygame.image.load(os.path.join(self.__path, "buttons", "music_off_button.png"))
+        self.__music_button_rect = self.__music_on_button.get_rect(topleft=(1450, 50))
+        self.__left_arrow_music = pygame.image.load(os.path.join(self.__path, "buttons", "left_arrow_button.png"))
+        self.__left_arrow_music_rect = self.__left_arrow_music.get_rect(topleft=(50, 300))
+        self.__right_arrow_music = pygame.image.load(os.path.join(self.__path, "buttons", "right_arrow_button.png"))
+        self.__right_arrow_music_rect = self.__right_arrow_music.get_rect(topleft=(450, 300))
+        self.__left_arrow_resolution = pygame.image.load(os.path.join(self.__path, "buttons", "left_arrow_button.png"))
+        self.__left_arrow_resolution_rect = self.__left_arrow_resolution.get_rect(topleft=(50, 600))
+        self.__right_arrow_resolution = pygame.image.load(os.path.join(self.__path, "buttons", "right_arrow_button.png"))
+        self.__right_arrow_resolution_rect = self.__right_arrow_resolution.get_rect(topleft=(450, 600))
+        self.__buffer = pygame.image.load(os.path.join(self.__path, "buttons", "buffer.png"))
 
-        self.__cup_image = pygame.image.load(os.path.join(self.__path, "assets", "pictures", "cup.png"))
-        self.__level_button_image = pygame.image.load(os.path.join(self.__path, "assets", "pictures", "available_level_button.png"))
-        self.__unavailable_level_button_image = pygame.image.load(os.path.join(self.__path, "assets", "pictures", "unavailable_level_button.png"))
-        self.__portal_images = {}
+        self.__cup_image = pygame.image.load(os.path.join(self.__path, "levels", "cup.png"))
+        self.__portal_images = {
+            "red": pygame.image.load(os.path.join(self.__path, "levels", "red_portal.png")),
+            "blue": pygame.image.load(os.path.join(self.__path, "levels", "blue_portal.png")),
+            "white": pygame.image.load(os.path.join(self.__path, "levels", "white_portal.png")),
+        }
 
     def __load_buttons(self):
         self.__gravity_button_rect = pygame.Rect(1500, 25, 75, 50)
         self.__reset_button_rect = pygame.Rect(1500, 85, 75, 50)
-        self.__button_font = pygame.font.SysFont(None, 24)
-        self.__level_button_font = pygame.font.SysFont("kristenitc", 20)
+        self.__font = pygame.font.SysFont("kristenitc", 20)
         self.__button = {
             "back": self.__back_button_rect,
             "setting": self.__setting_button_rect,
             "level": self.__play_button_rect,
             "gravity": self.__gravity_button_rect,
             "reset": self.__reset_button_rect,
+            "music_toggle": self.__music_button_rect,
+            "music_left": self.__left_arrow_music_rect,
+            "music_right": self.__right_arrow_music_rect,
         }
 
     def get_surface(self):
@@ -57,10 +75,10 @@ class Display: # Ne pas oublié le smooth scale
 
     def get_level_button_rects(self, level_ids):
         columns = 5
-        spacing_x = 260
-        spacing_y = 200
-        start_x = 100
-        start_y = 150
+        spacing_x = 300
+        spacing_y = 300
+        start_x = 150
+        start_y = 250
 
         rects = {}
         for index, level_id in enumerate(sorted(level_ids)):
@@ -77,8 +95,25 @@ class Display: # Ne pas oublié le smooth scale
         self.__surface.blit(self.__setting_button, self.__setting_button_rect)
 
     
-    def draw_setting(self):
+    def draw_setting(self, audio):
         self.__surface.blit(self.__setting_background, (0, 0))
+
+        if audio.get_is_running():
+            self.__surface.blit(self.__music_on_button, self.__music_button_rect)
+        else:
+            self.__surface.blit(self.__music_off_button, self.__music_button_rect)
+
+        self.__surface.blit(self.__left_arrow_music, self.__left_arrow_music_rect)
+        self.__surface.blit(self.__right_arrow_music, self.__right_arrow_music_rect)
+        self.__surface.blit(self.__buffer, (200, 300))
+        text_surface = self.__font.render(audio.get_music(), True, TEXT_COLOR)
+        text_rect = text_surface.get_rect(center=(300, 350))
+        self.__surface.blit(text_surface, text_rect)
+
+        self.__surface.blit(self.__left_arrow_music, self.__left_arrow_resolution_rect)
+        self.__surface.blit(self.__right_arrow_music, self.__right_arrow_resolution_rect)
+        self.__surface.blit(self.__buffer, (200, 600))
+
         self.__surface.blit(self.__back_button, self.__back_button_rect)
 
     def draw_level(self, level_ids, unlocked_count):
@@ -93,12 +128,12 @@ class Display: # Ne pas oublié le smooth scale
                 self.__surface.blit(self.__level_button_image, rect)
                 self.__draw_level_button_label(level_id, rect)
             else:
-                self.__surface.blit(self.__unavailable_level_button_image, rect)
+                self.__surface.blit(self.__lock_level_button_image, rect)
 
         self.__surface.blit(self.__back_button, self.__back_button_rect)
 
     def __draw_level_button_label(self, level_id, rect):
-        text_surface = self.__level_button_font.render(level_id, True, LEVEL_BUTTON_TEXT_COLOR)
+        text_surface = self.__font.render(level_id, True, TEXT_COLOR)
         text_rect = text_surface.get_rect(center=rect.center)
         self.__surface.blit(text_surface, text_rect)
 
@@ -137,7 +172,7 @@ class Display: # Ne pas oublié le smooth scale
 
     def __draw_reset_button(self):
         pygame.draw.rect(self.__surface, RESET_BUTTON_COLOR, self.__reset_button_rect)
-        text_surface = self.__button_font.render("RESET", True, (255, 255, 255))
+        text_surface = self.__font.render("RESET", True, (255, 255, 255))
         text_rect = text_surface.get_rect(center=self.__reset_button_rect.center)
         self.__surface.blit(text_surface, text_rect)
 
@@ -156,20 +191,23 @@ class Display: # Ne pas oublié le smooth scale
     def __draw_cup(self, cup):
         rect = self.__cup_image.get_rect(topleft=(cup.get_x(), cup.get_y()))
         self.__surface.blit(self.__cup_image, rect)
+        self.__draw_cup_remaining(cup, rect)
 
-    def __get_portal_image(self, color):
-        if color not in self.__portal_images:
-            path = os.path.join(self.__path, "assets", "pictures", f"{color}_portal.png")
-            try:
-                self.__portal_images[color] = pygame.image.load(path)
-            except (pygame.error, FileNotFoundError):
-                self.__portal_images[color] = None
-        return self.__portal_images[color]
+    def __draw_cup_remaining(self, cup, rect):
+        requirements = cup.get_requirements()
+        filled = cup.get_filled()
+
+        text_y = rect.bottom + 4
+        for color, amount in requirements.items():
+            remaining = max(0, amount - filled[color])
+            text_color = GRAIN_COLORS.get(color, GRAIN_COLORS["white"])
+            text_surface = self.__font.render(str(remaining), True, text_color)
+            text_rect = text_surface.get_rect(midtop=(rect.centerx, text_y))
+            self.__surface.blit(text_surface, text_rect)
+            text_y += text_surface.get_height() + 2
 
     def __draw_portal(self, portal):
-        color = portal.get_output_color()
-        image = self.__get_portal_image(color)
-
+        image = self.__portal_images[portal.get_output_color()]
         rect = image.get_rect(topleft=(portal.get_x(), portal.get_y()))
         self.__surface.blit(image, rect)
 
