@@ -1,0 +1,16 @@
+LOGICAL_SIZE = (1600, 900)
+FPS = 30
+
+SPAWN_INTERVAL_FRAMES = 5  # 1 grain tous les 5 frames à 30 FPS ≈ 6 grains/sec
+
+WALL_COLOR = (0, 0, 0)
+OBSTACLE_COLOR = (101, 67, 33)
+GRAVITY_BUTTON_COLOR = (70, 130, 180)
+RESET_BUTTON_COLOR = (180, 60, 60)
+TEXT_COLOR = (0, 0, 0)
+WALL_THICKNESS = 10
+GRAIN_COLORS = {
+    "white": (255, 255, 255),
+    "red": (255, 0, 0),
+    "blue": (0, 0, 255),
+}
