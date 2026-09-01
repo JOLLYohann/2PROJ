@@ -3,6 +3,7 @@ import pygame
 from src.game_loop import GameLoop
 from src.level import find_level
 from src.save import load_save
+from src.screen_manager import ScreenManager
 from src.settings import FPS
 
 class GameManager:
@@ -42,6 +43,10 @@ class GameManager:
                 self.__audio.set_music(1)
             elif self.__screen_manager.clicked_button("music_toggle"):
                 self.__audio.play_music()
+            elif self.__screen_manager.clicked_button("resolution_left"):
+                self.__display.cycle_resolution(-1)
+            elif self.__screen_manager.clicked_button("resolution_right"):
+                self.__display.cycle_resolution(1)
         elif self.__current_page == "level":
             if self.__screen_manager.clicked_button("back"):
                 self.__current_page = "homepage"

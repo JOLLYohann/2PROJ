@@ -1,22 +1,62 @@
 import pygame
 import os
 
-from src.settings import LOGICAL_SIZE, WALL_COLOR, OBSTACLE_COLOR, GRAIN_COLORS, GRAVITY_BUTTON_COLOR, RESET_BUTTON_COLOR, TEXT_COLOR
+from src.settings import LOGICAL_SIZE, AVAILABLE_RESOLUTIONS, WALL_COLOR, OBSTACLE_COLOR, GRAIN_COLORS, GRAVITY_BUTTON_COLOR, RESET_BUTTON_COLOR, TEXT_COLOR
 
-class Display: # Ne pas oublié le smooth scale 
+class Display:
     def __init__(self):
         self.__path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets", "pictures")
 
         pygame.init()
 
         self.__surface = pygame.Surface(LOGICAL_SIZE)
-        self.__screen = pygame.display.set_mode(LOGICAL_SIZE)
+
+        self.__resolution_index = AVAILABLE_RESOLUTIONS.index(LOGICAL_SIZE)
+        self.__screen = None
+        self.__apply_resolution()
 
         pygame.display.set_caption("Sugar, Sugar")
 
         self.__load_pictures()
 
         self.__load_buttons()
+
+    def __apply_resolution(self):
+        if self.__resolution_index == len(AVAILABLE_RESOLUTIONS):
+            self.__screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        else:
+            self.__screen = pygame.display.set_mode(AVAILABLE_RESOLUTIONS[self.__resolution_index])
+
+    def cycle_resolution(self, direction):
+        """direction = -1 ou 1. Le dernier cran au-delà des résolutions listées est le plein écran."""
+        total_options = len(AVAILABLE_RESOLUTIONS) + 1
+        self.__resolution_index = (self.__resolution_index + direction) % total_options
+        self.__apply_resolution()
+
+    def get_resolution_label(self):
+        if self.__resolution_index == len(AVAILABLE_RESOLUTIONS):
+            return "Fullscreen"
+        width, height = AVAILABLE_RESOLUTIONS[self.__resolution_index]
+        return f"{width}x{height}"
+
+    def __compute_scale_and_offset(self):
+        screen_width, screen_height = self.__screen.get_size()
+        logical_width, logical_height = LOGICAL_SIZE
+
+        scale = min(screen_width / logical_width, screen_height / logical_height)
+        scaled_width = int(logical_width * scale)
+        scaled_height = int(logical_height * scale)
+
+        offset_x = (screen_width - scaled_width) // 2
+        offset_y = (screen_height - scaled_height) // 2
+
+        return scale, offset_x, offset_y
+
+    def screen_to_logical(self, pos):
+        """Convertit une position souris (espace fenêtre réelle) en coordonnées logiques (1600x900)."""
+        scale, offset_x, offset_y = self.__compute_scale_and_offset()
+        x, y = pos
+        return (int((x - offset_x) / scale), int((y - offset_y) / scale))
 
     def __load_pictures(self):
         self.__home_background = pygame.image.load(os.path.join(self.__path, "backgrounds", "home_background.png"))
@@ -34,7 +74,7 @@ class Display: # Ne pas oublié le smooth scale
         self.__lock_level_button_image = pygame.image.load(os.path.join(self.__path, "buttons", "unavailable_level_button.png"))
         self.__music_on_button = pygame.image.load(os.path.join(self.__path, "buttons", "music_on_button.png"))
         self.__music_off_button = pygame.image.load(os.path.join(self.__path, "buttons", "music_off_button.png"))
-        self.__music_button_rect = self.__music_on_button.get_rect(topleft=(1450, 50))
+        self.__music_button_rect = self.__music_on_button.get_rect(topleft=(1500, 50))
         self.__left_arrow_music = pygame.image.load(os.path.join(self.__path, "buttons", "left_arrow_button.png"))
         self.__left_arrow_music_rect = self.__left_arrow_music.get_rect(topleft=(50, 300))
         self.__right_arrow_music = pygame.image.load(os.path.join(self.__path, "buttons", "right_arrow_button.png"))
@@ -65,6 +105,8 @@ class Display: # Ne pas oublié le smooth scale
             "music_toggle": self.__music_button_rect,
             "music_left": self.__left_arrow_music_rect,
             "music_right": self.__right_arrow_music_rect,
+            "resolution_left": self.__left_arrow_resolution_rect,
+            "resolution_right": self.__right_arrow_resolution_rect,
         }
 
     def get_surface(self):
@@ -94,7 +136,6 @@ class Display: # Ne pas oublié le smooth scale
         self.__surface.blit(self.__play_button, self.__play_button_rect)
         self.__surface.blit(self.__setting_button, self.__setting_button_rect)
 
-    
     def draw_setting(self, audio):
         self.__surface.blit(self.__setting_background, (0, 0))
 
@@ -106,13 +147,16 @@ class Display: # Ne pas oublié le smooth scale
         self.__surface.blit(self.__left_arrow_music, self.__left_arrow_music_rect)
         self.__surface.blit(self.__right_arrow_music, self.__right_arrow_music_rect)
         self.__surface.blit(self.__buffer, (200, 300))
-        text_surface = self.__font.render(audio.get_music(), True, TEXT_COLOR)
-        text_rect = text_surface.get_rect(center=(300, 350))
-        self.__surface.blit(text_surface, text_rect)
+        music_text = self.__font.render(audio.get_music(), True, TEXT_COLOR)
+        music_rect = music_text.get_rect(center=(300, 350))
+        self.__surface.blit(music_text, music_rect)
 
-        self.__surface.blit(self.__left_arrow_music, self.__left_arrow_resolution_rect)
-        self.__surface.blit(self.__right_arrow_music, self.__right_arrow_resolution_rect)
+        self.__surface.blit(self.__left_arrow_resolution, self.__left_arrow_resolution_rect)
+        self.__surface.blit(self.__right_arrow_resolution, self.__right_arrow_resolution_rect)
         self.__surface.blit(self.__buffer, (200, 600))
+        resolution_text = self.__font.render(self.get_resolution_label(), True, TEXT_COLOR)
+        resolution_rect = resolution_text.get_rect(center=(300, 650))
+        self.__surface.blit(resolution_text, resolution_rect)
 
         self.__surface.blit(self.__back_button, self.__back_button_rect)
 
@@ -216,5 +260,10 @@ class Display: # Ne pas oublié le smooth scale
         self.__surface.set_at((grain.get_x(), grain.get_y()), color)
 
     def render(self):
-        self.__screen.blit(self.__surface, (0, 0))
+        scale, offset_x, offset_y = self.__compute_scale_and_offset()
+        scaled_size = (int(LOGICAL_SIZE[0] * scale), int(LOGICAL_SIZE[1] * scale))
+        scaled_surface = pygame.transform.scale(self.__surface, scaled_size)
+
+        self.__screen.fill((0, 0, 0))  # bandes noires si le ratio ne correspond pas exactement
+        self.__screen.blit(scaled_surface, (offset_x, offset_y))
         pygame.display.flip()

@@ -1,4 +1,5 @@
 LOGICAL_SIZE = (1600, 900)
+AVAILABLE_RESOLUTIONS = [(1280, 720), (1600, 900), (1920, 1080), (2560, 1440)]
 FPS = 30
 
 SPAWN_INTERVAL_FRAMES = 5  # 1 grain tous les 5 frames à 30 FPS ≈ 6 grains/sec

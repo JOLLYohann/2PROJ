@@ -53,7 +53,7 @@ class GameLoop:
             self.__last_draw_pos = None
             return
 
-        current_pos = pygame.mouse.get_pos()
+        current_pos = self.__display.screen_to_logical(pygame.mouse.get_pos())
 
         if self.__display.get_button("back").collidepoint(current_pos):
             self.__last_draw_pos = None
