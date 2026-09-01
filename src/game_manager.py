@@ -6,9 +6,10 @@ from src.save import load_save
 from src.settings import FPS
 
 class GameManager:
-    def __init__(self, audio, display):
+    def __init__(self, audio, display, screen_manager):
         self.__audio = audio
         self.__display = display
+        self.__screen_manager = screen_manager
 
         self.__clock = pygame.time.Clock()
 
@@ -20,33 +21,37 @@ class GameManager:
 
         self.__navigation()
 
-    def __click_coord(self): # Plus tard -> faire un class ScreenManager dans screen_manager.py, à partager avec game_loop.py
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                self.__is_running = False
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                mouse_click = pygame.mouse.get_pos()
-                if self.__current_page == "homepage":
-                    if self.__display.get_button("level").collidepoint(mouse_click):
-                        self.__current_page = "level"
-                    elif self.__display.get_button("setting").collidepoint(mouse_click):
-                        self.__current_page = "setting"
-                elif self.__current_page == "setting":
-                    if self.__display.get_button("back").collidepoint(mouse_click):
-                        self.__current_page = "homepage"
-                    elif self.__display.get_button("music_left").collidepoint(mouse_click):
-                        self.__audio.set_music(-1)
-                    elif self.__display.get_button("music_right").collidepoint(mouse_click):
-                        self.__audio.set_music(1)
-                    elif self.__display.get_button("music_toggle").collidepoint(mouse_click):
-                        self.__audio.play_music()
-                elif self.__current_page == "level":
-                    if self.__display.get_button("back").collidepoint(mouse_click):
-                        self.__current_page = "homepage"
-                    else:
-                        self.__handle_level_click(mouse_click)
+    def __click_coord(self):
+        self.__screen_manager.poll_events()
+
+        if self.__screen_manager.is_quit_requested():
+            self.__is_running = False
+            return
+
+        if self.__current_page == "homepage":
+            if self.__screen_manager.clicked_button("level"):
+                self.__current_page = "level"
+            elif self.__screen_manager.clicked_button("setting"):
+                self.__current_page = "setting"
+        elif self.__current_page == "setting":
+            if self.__screen_manager.clicked_button("back"):
+                self.__current_page = "homepage"
+            elif self.__screen_manager.clicked_button("music_left"):
+                self.__audio.set_music(-1)
+            elif self.__screen_manager.clicked_button("music_right"):
+                self.__audio.set_music(1)
+            elif self.__screen_manager.clicked_button("music_toggle"):
+                self.__audio.play_music()
+        elif self.__current_page == "level":
+            if self.__screen_manager.clicked_button("back"):
+                self.__current_page = "homepage"
+            else:
+                self.__handle_level_click(self.__screen_manager.get_last_click())
 
     def __handle_level_click(self, mouse_click):
+        if mouse_click is None:
+            return
+
         player_level = load_save()["player"]["level"]
         level_buttons = self.__display.get_level_button_rects(self.__level_ids)
 
@@ -71,7 +76,7 @@ class GameManager:
                 player_level = load_save()["player"]["level"]
                 self.__display.draw_level(self.__level_ids, player_level)
             elif self.__current_page == "game":
-                game = GameLoop(self.__display, self.__selected_level_id)
+                game = GameLoop(self.__display, self.__selected_level_id, self.__screen_manager)
                 result = game.game_loop()
                 self.__is_running = not result[0]
 

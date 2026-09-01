@@ -9,10 +9,11 @@ from src.save import set_save
 from src.settings import SPAWN_INTERVAL_FRAMES, FPS, WALL_THICKNESS
 
 class GameLoop:
-    def __init__(self, display, level_id):
+    def __init__(self, display, level_id, screen_manager):
         self.__display = display
         self.__level_id = level_id
         self.__level = load_level(level_id)
+        self.__screen_manager = screen_manager
 
         self.__game_closed = False
 
@@ -23,18 +24,19 @@ class GameLoop:
         self.__last_draw_pos = None
 
     def __click_coord(self):
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.__game_finished = True
-                    self.__game_closed = True
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    mouse_click = pygame.mouse.get_pos()
-                    if self.__display.get_button("back").collidepoint(mouse_click):
-                        self.__game_finished = True
-                    elif self.__display.get_button("gravity").collidepoint(mouse_click):
-                        self.__level.invert_gravity()
-                    elif self.__display.get_button("reset").collidepoint(mouse_click):
-                        self.__reset_level()
+        self.__screen_manager.poll_events()
+
+        if self.__screen_manager.is_quit_requested():
+            self.__game_finished = True
+            self.__game_closed = True
+            return
+
+        if self.__screen_manager.clicked_button("back"):
+            self.__game_finished = True
+        elif self.__screen_manager.clicked_button("gravity"):
+            self.__level.invert_gravity()
+        elif self.__screen_manager.clicked_button("reset"):
+            self.__reset_level()
 
     def __reset_level(self):
         self.__level = load_level(self.__level_id)
