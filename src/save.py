@@ -10,12 +10,21 @@ def _save_path():
 
 
 def load_save():
-    with open(_save_path(), encoding="utf-8") as file:
+    path = _save_path()
+
+    if not os.path.exists(path):
+        default_data = {"player": {"level": 1}}
+        write_save(default_data)
+        return default_data
+
+    with open(path, encoding="utf-8") as file:
         return json.load(file)
 
 
 def write_save(data):
-    with open(_save_path(), "w", encoding="utf-8") as file:
+    path = _save_path()
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as file:
         json.dump(data, file, indent=2)
 
 

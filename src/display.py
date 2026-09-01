@@ -28,7 +28,6 @@ class Display:
             self.__screen = pygame.display.set_mode(AVAILABLE_RESOLUTIONS[self.__resolution_index])
 
     def cycle_resolution(self, direction):
-        """direction = -1 ou 1. Le dernier cran au-delà des résolutions listées est le plein écran."""
         total_options = len(AVAILABLE_RESOLUTIONS) + 1
         self.__resolution_index = (self.__resolution_index + direction) % total_options
         self.__apply_resolution()
@@ -53,7 +52,6 @@ class Display:
         return scale, offset_x, offset_y
 
     def screen_to_logical(self, pos):
-        """Convertit une position souris (espace fenêtre réelle) en coordonnées logiques (1600x900)."""
         scale, offset_x, offset_y = self.__compute_scale_and_offset()
         x, y = pos
         return (int((x - offset_x) / scale), int((y - offset_y) / scale))
@@ -74,7 +72,7 @@ class Display:
         self.__lock_level_button_image = pygame.image.load(os.path.join(self.__path, "buttons", "unavailable_level_button.png"))
         self.__music_on_button = pygame.image.load(os.path.join(self.__path, "buttons", "music_on_button.png"))
         self.__music_off_button = pygame.image.load(os.path.join(self.__path, "buttons", "music_off_button.png"))
-        self.__music_button_rect = self.__music_on_button.get_rect(topleft=(1500, 50))
+        self.__music_button_rect = self.__music_on_button.get_rect(topleft=(1450, 50))
         self.__left_arrow_music = pygame.image.load(os.path.join(self.__path, "buttons", "left_arrow_button.png"))
         self.__left_arrow_music_rect = self.__left_arrow_music.get_rect(topleft=(50, 300))
         self.__right_arrow_music = pygame.image.load(os.path.join(self.__path, "buttons", "right_arrow_button.png"))
