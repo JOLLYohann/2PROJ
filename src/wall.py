@@ -1,8 +1,7 @@
 def obstacle_from_json(data):
     shape = data["shape"]
     if shape == "rect":
-        return Wall(shape, {"x": data["x"], "y": data["y"],
-                                 "width": data["width"], "height": data["height"]})
+        return Wall(shape, {"x": data["x"], "y": data["y"], "width": data["width"], "height": data["height"]})
     if shape == "circle":
         return Wall(shape, {"x": data["x"], "y": data["y"], "radius": data["radius"]})
     if shape == "triangle":

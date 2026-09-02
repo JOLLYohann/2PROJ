@@ -93,6 +93,7 @@
   "level-08":{
     "spawn_point": [800, 50],
     "grain_color": "white",
+    "total_grains": 1000,
     "obstacles": [
       {"shape": "rect", "x": 0, "y": 800, "width": 1600, "height": 100},
       {"shape": "rect", "x": 750, "y": 300, "width": 100, "height": 100},
@@ -130,7 +131,9 @@
     "grain_color": "white",
     "total_grains": 1000,
     "obstacles": [
-      {"shape": "rect", "x": 0, "y": 800, "width": 1600, "height": 100}
+      {"shape": "rect", "x": 0, "y": 800, "width": 1600, "height": 100},
+      {"shape": "triangle", "points": [[800, 100], [700, 200], [900, 200]]},
+      {"shape": "circle", "x": 800, "y": 600, "radius": 100}
     ],
     "portals": [
       {"x": 585, "y": 400, "size": 30, "output_color": "blue"},
